@@ -27,7 +27,3 @@ requests==2.34.2
 
 torch==2.13.0
 torchvision==0.18.1
-requests==2.32.4
-
-numpy==2.2.6
-pandas==2.3.1
