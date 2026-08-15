@@ -11,7 +11,7 @@ from utils import save_uploaded_files
 # =====================================================
 
 st.set_page_config(
-    page_title="ResearchGPT",
+    page_title="ResearchMate",
     page_icon="🔬",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -273,7 +273,7 @@ footer{
 
 with st.sidebar:
 
-    st.markdown("## 🔬 ResearchGPT")
+    st.markdown("## 🔬 ResearchMate")
 
     st.caption("AI Powered Research Assistant")
 
@@ -398,7 +398,7 @@ with st.sidebar:
 
 st.markdown("""
 <div class="main-title">
-🔬 ResearchGPT
+🔬 ResearchMate
 </div>
 """, unsafe_allow_html=True)
 
@@ -456,9 +456,9 @@ st.markdown("<br>", unsafe_allow_html=True)
 if len(st.session_state.messages) == 0:
 
     st.info("""
-# 👋 Welcome to ResearchGPT
+# 👋 Welcome to ResearchMate
 
-ResearchGPT is an AI-powered assistant for understanding research papers.
+ResearchMate is an AI-powered assistant for understanding research papers.
 
 ### You can:
 
@@ -514,7 +514,7 @@ border:1px solid #334155;
 box-shadow:0 6px 18px rgba(0,0,0,.35);
 ">
 
-### 🤖 ResearchGPT
+### 🤖 ResearchMate
 
 {message["content"]}
 
@@ -669,7 +669,7 @@ font-size:15px;
 padding-bottom:25px;
 ">
 
-🔬 <b>ResearchGPT</b><br>
+🔬 <b>ResearchMate</b><br>
 
 Powered by LangChain • Groq • HuggingFace • ChromaDB
 
@@ -677,3 +677,4 @@ Powered by LangChain • Groq • HuggingFace • ChromaDB
 """,
 unsafe_allow_html=True
 )
+
