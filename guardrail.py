@@ -2,6 +2,7 @@
 # guardrails.py
 
 from typing import Literal
+guardrail_llm = llm
 
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
