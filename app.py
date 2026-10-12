@@ -8,6 +8,7 @@ from guardrails import check_user_input, check_final_answer
 from agent import agent
 from rag import build_vector_database, clear_database
 from utils import save_uploaded_files
+guardrail_llm = llm
 
 
 # =====================================================
