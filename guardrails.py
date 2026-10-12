@@ -2,6 +2,7 @@
 # guardrails.py
 
 from typing import Literal
+from config import llm
 guardrail_llm = llm
 
 from pydantic import BaseModel, Field
