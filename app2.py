@@ -157,75 +157,140 @@ question = st.chat_input(
 )
 
 
-# ================= AGENT ================= #
+
+# =====================================================
+# AGENT WITH LLM-BASED GUARDRAILS
+# =====================================================
 
 if question:
 
-    # Save user message
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": question
-        }
-    )
+    # Store and display the user message
+    st.session_state.messages.append({
+        "role": "user",
+        "content": question
+    })
 
     with st.chat_message("user"):
         st.markdown(question)
 
     with st.chat_message("assistant"):
 
-        placeholder = st.empty()
+        response_placeholder = st.empty()
 
-        with st.spinner("Researching..."):
+        with st.spinner("🛡️ Checking query and researching..."):
 
             try:
+                # -------------------------------------
+                # 1. INPUT GUARDRAIL
+                # -------------------------------------
 
-                response = agent.invoke(
-                    {
-                        "messages": st.session_state.messages
-                    }
+                input_decision = check_user_input(
+                    guardrail_llm=llm,
+                    question=question,
                 )
 
-                messages = response["messages"]
+                if not input_decision.allowed:
 
-                last_message = messages[-1]
-
-                # -----------------------------
-                # Extract final text safely
-                # -----------------------------
-
-                if isinstance(last_message.content, str):
-
-                    answer = last_message.content
-
-                elif isinstance(last_message.content, list):
-
-                    answer = ""
-
-                    for item in last_message.content:
-
-                        if isinstance(item, dict):
-                            answer += item.get("text", "")
-
-                        elif hasattr(item, "text"):
-                            answer += item.text
-
-                        else:
-                            answer += str(item)
+                    answer = (
+                        "🛡️ **Request blocked by ResearchMate**\n\n"
+                        f"{input_decision.reason}"
+                    )
 
                 else:
+                    # ---------------------------------
+                    # 2. RUN YOUR EXISTING AGENT
+                    # ---------------------------------
 
-                    answer = str(last_message.content)
+                    response = agent.invoke({
+                        "messages": st.session_state.messages
+                    })
 
-            except Exception as e:
+                    messages = response["messages"]
+                    last_message = messages[-1]
 
-                answer = f"❌ Error:\n\n{e}"
+                    # Extract the final answer using your
+                    # existing response-handling approach.
+                    if isinstance(last_message.content, str):
+                        answer = last_message.content
 
-            placeholder.markdown(answer)
+                    elif isinstance(last_message.content, list):
+                        answer = ""
 
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": answer
-        }
-    )
+                        for item in last_message.content:
+                            if isinstance(item, dict):
+                                answer += item.get("text", "")
+                            elif hasattr(item, "text"):
+                                answer += item.text
+                            else:
+                                answer += str(item)
+                    else:
+                        answer = str(last_message.content)
+
+                    # ---------------------------------
+                    # 3. COLLECT ACTUAL TOOL EVIDENCE
+                    # ---------------------------------
+
+                    evidence_parts = []
+
+                    for message in messages:
+                        if getattr(message, "type", None) == "tool":
+                            content = message.content
+
+                            if isinstance(content, str):
+                                evidence_parts.append(content)
+
+                            elif isinstance(content, list):
+                                for item in content:
+                                    if isinstance(item, dict):
+                                        evidence_parts.append(
+                                            item.get("text", str(item))
+                                        )
+                                    else:
+                                        evidence_parts.append(str(item))
+
+                            else:
+                                evidence_parts.append(str(content))
+
+                    evidence = "\n\n".join(evidence_parts)
+
+                    # ---------------------------------
+                    # 4. OUTPUT GUARDRAIL
+                    # ---------------------------------
+
+                    output_decision = check_final_answer(
+                        guardrail_llm=llm,
+                        question=question,
+                        evidence=evidence,
+                        answer=answer,
+                    )
+
+                    if not output_decision.safe:
+                        answer = (
+                            "🛡️ **Answer blocked by ResearchMate**\n\n"
+                            "The answer did not pass the security check."
+                        )
+
+                    elif not output_decision.grounded:
+                        answer = (
+                            "⚠️ **Answer could not be verified**\n\n"
+                            "The generated answer could not be adequately "
+                            "supported by the retrieved research evidence. "
+                            "Please try a more specific question or review "
+                            "the original sources."
+                        )
+
+            except Exception:
+                # Avoid displaying internal errors or credentials.
+                answer = (
+                    "The request could not be completed safely. "
+                    "Please try again."
+                )
+
+        response_placeholder.markdown(answer)
+
+    # Store the final displayed response
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": answer
+    })
+
