@@ -6,6 +6,7 @@ from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 
 load_dotenv()
+guardrail_llm = llm
 
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
