@@ -9,7 +9,7 @@ load_dotenv()
 
 
 llm = ChatGroq(
-    model="minimaxai/minimax-m2.7",
+    model="mistralai/Mistral-Small-3.2-24B-Instruct-2506",
     temperature=0,
     max_tokens=500   
 )
