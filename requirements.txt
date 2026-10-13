@@ -30,3 +30,4 @@ requests==2.34.2
 
 numpy==2.5.1
 pandas==3.0.5
+langsmith
