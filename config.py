@@ -9,7 +9,7 @@ load_dotenv()
 
 
 llm = ChatGroq(
-    model="mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    model="google/gemma-3-12b-it",
     temperature=0,
     max_tokens=500   
 )
