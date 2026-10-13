@@ -1,3 +1,28 @@
+import os
+import streamlit as st
+from dotenv import load_dotenv
+
+# Load local .env variables
+load_dotenv()
+
+# Load secrets configured in Streamlit Cloud
+try:
+    for key in (
+        "GROQ_API_KEY",
+        "LANGSMITH_TRACING",
+        "LANGSMITH_API_KEY",
+        "LANGSMITH_PROJECT",
+    ):
+        if key in st.secrets:
+            os.environ[key] = str(st.secrets[key])
+except Exception:
+    # Local development may not have Streamlit secrets configured
+    pass
+
+# Import your existing modules only after configuration
+from config import llm
+from agent import agent  # Adapt to your existing agent variable/import
+
 import streamlit as st
 from pathlib import Path
 
