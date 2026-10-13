@@ -9,7 +9,7 @@ load_dotenv()
 
 
 llm = ChatGroq(
-    model="google/gemma-3-12b-it",
+    model="qwen/qwen3.8-27b",
     temperature=0,
     max_tokens=500   
 )
