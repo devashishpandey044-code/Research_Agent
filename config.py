@@ -9,8 +9,9 @@ load_dotenv()
 
 
 llm = ChatGroq(
-    model="qwen/qwen3.8-27b",
+    model="minimaxai/minimax-m2.7",
     temperature=0,
+    max_tokens=500   
 )
 guardrail_llm = llm
 
